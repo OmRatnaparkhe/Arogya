@@ -3,20 +3,8 @@ const express = require("express");
 const router = express.Router();
 const Patient = require("../schema/patient.schema");
 const multer = require("multer");
-const {
-    createPatient,
-    getAllPatients,
-    getAllPatientsWithLocation,
-    getPatientByClerkId,
-    getPatientWithEvents,
-    getMedicationReminders,
-    addMedicationReminder,
-    updateMedicationReminder,
-    deleteMedicationReminder,
-    setPreferredLanguage,
-    updateLocation,
-} = require("../controllers/patient.controller");
-const admin = require("../config/firebase.js");
+const { createPatient, getAllPatients, getAllPatientsWithLocation, getPatientByClerkId, getPatientWithEvents, getMedicationReminders, addMedicationReminder, updateMedicationReminder, deleteMedicationReminder, setPreferredLanguage, updateLocation, getMedicalHistory, upsertMedicalHistory } = require("../controllers/patient.controller");
+
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -77,5 +65,13 @@ router.post("/:clerkUserId/language", setPreferredLanguage);
 
 // Update patient location
 router.put("/:clerkUserId/location", updateLocation);
+
+// Medical history (text + documents + AI summary)
+router.get('/:clerkUserId/medical-history', getMedicalHistory);
+router.post(
+    '/:clerkUserId/medical-history',
+    upload.array('documents', 10),
+    upsertMedicalHistory
+);
 
 module.exports = router;
